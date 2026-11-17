@@ -479,9 +479,9 @@ function cardHTML(){
   <div class="ans" id="ans"><div class="furi" lang="ja">${esc(w.f||w.jp)}</div><div class="kr" id="kr">${esc(w.kr)}</div>
   <div class="ex"><p lang="ja">${exHTML(w)}${w.ej?` <button class="exsay" data-act="sayex" data-id="${id}" aria-label="예문 듣기">${ICON.say}</button>`:''}</p>${w.ek?`<p class="exk">${esc(w.ek)}</p>`:''}</div>
   <button class="sheet${rv?' gone':''}" id="sheet" data-act="reveal"><span>${S.set.step&&w.f?'시트를 내려 읽기 확인':'시트를 내려 뜻 확인'}</span><kbd>Space</kbd></button></div>
-  ${fl?`<div class="flipnav"><button class="btn" data-act="prev"${sess.i?'':' disabled'}>← 이전</button><span class="pill" id="fhint">${rv?'옆으로 밀면 다음 단어':'뜻을 확인하면 넘길 수 있어요'}</span><button class="btn pri" data-act="fwd"${rv?'':' disabled'}>${last?'끝내기':'다음'} →</button></div>`
+  ${fl?`<div class="flipnav"><button class="btn" data-act="prev"${sess.i?'':' disabled'}>← 이전</button><span class="pill" id="fhint">옆으로 밀면 넘어가요</span><button class="btn pri" data-act="fwd">${last?'끝내기':'다음'} →</button></div>`
   :`<div class="grades">${g.map(([l,q],k)=>`<button class="g${q}" data-act="grade" data-v="${q}"${rv?'':' disabled'}>${l}<small>${nextIvl(id,q)} · ${k+1}</small></button>`).join('')}</div>`}
-  </div><p class="hint">${fl?'예문의 노란 표시가 이 단어예요. 오답노트 카드는 평가 없이 넘겨 보기만 해요. 손가락으로 왼쪽으로 밀면 다음, 오른쪽으로 밀면 이전 단어예요.':'예문의 노란 표시가 이 단어예요. 뜻을 확인한 뒤 손가락으로 왼쪽으로 밀면 평가 없이 다음 단어, 오른쪽으로 밀면 이전 단어예요. 어려워요를 누른 카드는 이 세트 끝에 한 번 더 나오고 오답노트에 들어가요.'}</p></div>`;
+  </div><p class="hint">${fl?'예문의 노란 표시가 이 단어예요. 오답노트 카드는 평가 없이 넘겨 보기만 해요. 손가락으로 왼쪽으로 밀면 다음, 오른쪽으로 밀면 이전 단어예요.':'예문의 노란 표시가 이 단어예요. 손가락으로 왼쪽으로 밀면 평가 없이 다음 단어, 오른쪽으로 밀면 이전 단어예요. 어려워요를 누른 카드는 이 세트 끝에 한 번 더 나오고 오답노트에 들어가요.'}</p></div>`;
 }
 function reveal(){
   const sh=$('#sheet');if(!sh)return;const w=W[sess.ids[sess.i]];
@@ -489,7 +489,6 @@ function reveal(){
   sess.step=2;sh.style.transform='';sh.classList.add('gone');
   document.querySelectorAll('.grades button').forEach(b=>b.disabled=false);
   sess.rv.add(sess.i);
-  if(sess.flip){const f=$('[data-act=fwd]');if(f)f.disabled=false;const h=$('#fhint');if(h)h.textContent='옆으로 밀면 다음 단어'}
   if(S.set.tts)say(w);
 }
 function grade(q){
@@ -503,11 +502,11 @@ function grade(q){
 }
 /* 오답노트 cards: no grading, swipe/arrow through once the meaning is shown */
 /* swipe / arrows: 오답노트 cards have no grades; in other card scopes this moves on without grading */
-function fwd(){if(!sess||sess.mode!=='card'||sess.done||sess.step<2)return;sess.i++;
+function fwd(){if(!sess||sess.mode!=='card'||sess.done)return;sess.i++;
   if(!sess.flip&&sess.set>=0){S.ui.pos=[sess.set,sess.i];save()}
   if(sess.i>=sess.ids.length){if(sess.flip){sess.done=true;return render()}finish();return render()}
   sess.step=sess.rv.has(sess.i)?2:0;sess.anim='l';render()}
-function prev(){if(!sess||sess.mode!=='card'||sess.done||!sess.i)return;sess.i--;sess.step=2;sess.anim='r';render()}
+function prev(){if(!sess||sess.mode!=='card'||sess.done||!sess.i)return;sess.i--;sess.step=sess.rv.has(sess.i)?2:0;sess.anim='r';render()}
 function quizHTML(){
   const q=sess.q,t=q.t,k=q.kind;let prompt;
   if(k==='blank')prompt=`<div class="sent" lang="ja">${esc(t.ej.slice(0,t.bs))}<span class="gap">${sess.ans!=null?esc(t.ej.substr(t.bs,t.bl)):'&nbsp;'}</span>${esc(t.ej.slice(t.bs+t.bl))}</div>${t.ek?`<div class="sentk">${esc(t.ek)}</div>`:'<div class="sentk">문맥에 맞는 단어를 고르세요</div>'}`;
@@ -630,7 +629,7 @@ $('#sGoal').addEventListener('change',e=>{S.set.goal=+e.target.value;save();refr
   st.addEventListener('touchstart',e=>{tx=sess&&sess.mode==='card'&&!sess.empty&&!sess.done&&e.touches.length===1?[e.touches[0].clientX,e.touches[0].clientY]:null},{passive:true});
   st.addEventListener('touchend',e=>{if(!tx)return;const t=e.changedTouches[0],dx=t.clientX-tx[0],dy=t.clientY-tx[1];tx=null;
     if(Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.5)return;
-    if(dx<0){if(sess.step<2)toast('시트를 내려 뜻을 먼저 확인하세요.');else fwd()}else prev()},{passive:true});}
+    if(dx<0)fwd();else prev()},{passive:true});}
 $('#sStep').addEventListener('change',e=>{S.set.step=e.target.checked;save();if(sess&&sess.mode==='card'&&!sess.done)render()});
 $('#sTts').addEventListener('change',e=>{S.set.tts=e.target.checked;save()});
 let armed=0;
