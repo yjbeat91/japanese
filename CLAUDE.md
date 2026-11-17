@@ -51,6 +51,8 @@ cd app && python3 -m http.server 8000   # file://로 열면 fetch가 막혀서 �
 
 - 모드: 단어 카드(빨간 시트를 내려 읽기→뜻 확인, 다시/애매/알아요/쉬움 평가), 4지선다(뜻·단어·읽기), 빈칸 채우기, 짝 맞추기, 60초 스피드 OX.
 - 범위: 오늘의 학습(복습 대기 + 하루 새 단어), 세트별, 오답노트(두 번 연속 맞히면 빠짐), 즐겨찾기.
+- 화면 배치: 노트북(921px 이상)은 카드 왼쪽·오늘/진도 패널 오른쪽·단어장 아래. 920px 이하에서는 카드 아래 [오늘·진도·단어장] 탭(`#tabs`)으로
+  `#pToday`·`#pProg`·`#pList` 중 하나만 보인다(`html[data-tab]`, 마지막 탭은 localStorage `jvocab-tab`). 600px 이하에서는 모드 버튼이 한 줄 가로 스크롤.
 - 기록 `S.r[id] = [상자, 다음복습일, 틀린횟수, 오답노트여부, 연속정답, 처음본날]`, 복습 간격 `INT=[0,1,2,4,8,16,32,64]`일.
 - 저장: localStorage에 먼저, claude.ai에서는 `claude.use('db')`로 계정(`data/users/<id>/progress`)에도 저장.
   발음: claude.ai에서는 `claude.use('tts')`(일본어), 없으면 브라우저 speechSynthesis.

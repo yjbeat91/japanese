@@ -197,6 +197,29 @@ summary{cursor:pointer;font-weight:500;font-size:15px;min-height:32px}
 .more{display:block;margin:16px auto 0;min-height:44px}
 .empty{color:var(--mut);padding:20px 0}
 @media(max-width:600px){.card{padding:16px 14px 18px 46px}.card::before{left:15px}.ring{left:-14px}.grades{grid-template-columns:repeat(2,minmax(0,1fr))}.deck{padding-right:12px}.hb{padding-block:10px}.brand h1{font-size:19px}}
+/* tabs (narrow screens only) */
+.tabs{display:none}
+@media(max-width:920px){
+.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:20px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.tabs button{border:0;background:none;min-height:46px;font-size:15px;font-weight:500;color:var(--mut)}
+.tabs button+button{border-left:1px solid var(--line)}
+.tabs button[aria-pressed=true]{background:var(--bluebg);color:var(--blue);font-weight:700}
+.grid{gap:16px}
+.panel+.panel{margin-top:0}
+html:not([data-tab=prog]) #pProg,html:not([data-tab=list]) #pList,html[data-tab=prog] #pToday,html[data-tab=list] #pToday{display:none}
+.list{padding-top:0}
+}
+@media(max-width:600px){
+.hb{padding-block:8px;gap:8px}.seal{width:36px;height:36px;font-size:21px}.brand{gap:10px}.brand small{font-size:12px}
+.chip{padding:3px 10px;font-size:12px}.chip i{width:32px}
+.grid{padding-top:12px}
+.modes{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px 8px;padding:0 16px}
+.modes::-webkit-scrollbar{display:none}
+.modes button{flex:none;padding:7px 12px;min-height:40px;font-size:14px}
+.scope{margin-bottom:12px}
+.word{padding:14px 0 12px}
+.grades{margin-top:14px}
+}
 @media(prefers-reduced-motion:reduce){.sheet,.bar i{transition:none}.tile.bad,.playing{animation:none}}
 </style>
 </head>
@@ -218,9 +241,10 @@ summary{cursor:pointer;font-weight:500;font-size:15px;min-height:32px}
       <select id="ssel" aria-label="세트"></select>
     </div>
     <section id="stage" aria-live="polite"><div class="sum"><h3>단어장을 펼치는 중</h3><p>엑셀에서 정리한 단어를 불러오고 있어요.</p></div></section>
+    <nav class="tabs" id="tabs" aria-label="아래 내용"><button data-tab="today">오늘</button><button data-tab="prog">진도</button><button data-tab="list">단어장</button></nav>
   </main>
   <aside>
-    <section class="panel">
+    <section class="panel" id="pToday">
       <div class="ringrow">
         <div class="ringbox"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" stroke="var(--soft)"/><circle id="ring" cx="60" cy="60" r="50" stroke="var(--sky)" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg><div class="rnum"><b id="tNum">0</b><span id="tGoal">/ 30 오늘</span></div></div>
         <dl class="kv"><div><dt>복습 대기</dt><dd id="kDue">0</dd></div><div><dt>남은 새 단어</dt><dd id="kNew">0</dd></div><div><dt>마스터</dt><dd id="kMas">0</dd></div><div><dt>학습한 단어</dt><dd id="kSeen">0</dd></div></dl>
@@ -236,7 +260,7 @@ summary{cursor:pointer;font-weight:500;font-size:15px;min-height:32px}
       </details>
       <p class="sync" id="sync">진도는 이 브라우저에 저장됩니다.</p>
     </section>
-    <section class="panel">
+    <section class="panel" id="pProg">
       <h2>뜻 초성별 진도</h2>
       <div class="gm" id="gmap"></div>
       <div class="legend"><span><i style="background:var(--blue)"></i>마스터</span><span><i style="background:color-mix(in srgb,var(--blue) 35%,var(--soft))"></i>학습 중</span><span><i style="background:var(--soft)"></i>아직 안 봄</span></div>
@@ -244,7 +268,7 @@ summary{cursor:pointer;font-weight:500;font-size:15px;min-height:32px}
   </aside>
 </div>
 
-<section class="wrap list">
+<section class="wrap list" id="pList">
   <div class="lhead"><h2>단어장</h2><input id="q" type="search" placeholder="단어, 읽기, 뜻으로 검색" aria-label="단어 검색"></div>
   <div class="seg" id="lf" style="margin-bottom:8px"><button data-f="all">전체</button><button data-f="wrong">오답</button><button data-f="star">즐겨찾기</button><button data-f="learn">학습 중</button><button data-f="master">마스터</button></div>
   <ul class="rows" id="rows"></ul>
@@ -537,6 +561,7 @@ function refresh(){
 }
 function controls(){
   document.querySelectorAll('#modes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===S.ui.mode));
+  {const m=$('#modes'),on=m.querySelector('[aria-pressed=true]');if(on&&m.scrollWidth>m.clientWidth)m.scrollLeft=Math.max(0,on.offsetLeft-m.offsetLeft-16-(m.clientWidth-on.offsetWidth)/2)}
   document.querySelectorAll('#seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.scope===S.ui.scope));
   const on=S.ui.scope==='set';$('#ssel').hidden=!on;
   if(S.ui.s>=SETS.length)S.ui.s=0;
@@ -553,9 +578,17 @@ function listHTML(){
 }
 function applySettings(){$('#sGoal').value=S.set.goal;$('#sNew').value=S.set.newPer;$('#sStep').checked=S.set.step;$('#sTts').checked=S.set.tts;controls();refresh();listHTML()}
 
+/* ---- tabs below the card (phone/tablet): remembered per browser ---- */
+const TK='jvocab-tab';
+function setTab(t,keep){if(!['today','prog','list'].includes(t))t='today';document.documentElement.dataset.tab=t;
+  document.querySelectorAll('#tabs [data-tab]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.tab===t));
+  if(keep)try{localStorage.setItem(TK,t)}catch(e){}}
+{let t='today';try{t=localStorage.getItem(TK)||t}catch(e){}setTab(t)}
+
 /* ---- events ---- */
 document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-act],[data-mode],[data-scope],[data-f]');if(!b)return;
+  const b=e.target.closest('[data-act],[data-mode],[data-scope],[data-f],[data-tab]');if(!b)return;
+  if(b.dataset.tab)return setTab(b.dataset.tab,1);
   if(b.dataset.mode){S.ui.mode=b.dataset.mode;save();controls();return newSession()}
   if(b.dataset.scope){S.ui.scope=b.dataset.scope;save();controls();return newSession()}
   if(b.dataset.f){lf=b.dataset.f;lmax=40;return listHTML()}
