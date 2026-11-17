@@ -11,14 +11,16 @@
 /* VOICE everyday study tool, brisk and encouraging, no clutter
    IDEA a ring-bound Japanese 単語カード deck studied with a red 赤シート that hides the answers printed in red ink
    PICTURE the live card itself: big mincho word, ruled answer area, red sheet that slides down to reveal reading then meaning
-   COLOUR white paper, ink black, sheet red #e3232c as the header band, notebook-rule blue for selection, highlighter yellow for the word in examples
+   COLOUR pastel sky: pale sky header band #bfe4f8 with navy ink, sky-blue answer sheet, calm sky-blue for selection, teal for meanings, soft rose only for wrong answers, highlighter yellow for the word in examples
    TYPE Shippori Mincho B1 for the Japanese headword, Zen Kaku Gothic New for Japanese text, IBM Plex Sans KR for Korean UI
    LAYOUT laptop: study stage left with today panel right; phone: header, modes, stage, then today, progress, word list */
 :root{color-scheme:light dark;
---bg:light-dark(#ffffff,#121214);--ink:light-dark(#16161a,#ececf0);--mut:light-dark(#5b5b66,#a5a5b0);
---line:light-dark(#e3e3ea,#2c2d34);--soft:light-dark(#f4f5f8,#1a1b20);--card:light-dark(#ffffff,#1d1e23);
---red:light-dark(#e3232c,#d8323a);--ans:light-dark(#cc3317,#ff8366);--blue:light-dark(#1f4fd1,#8aabff);
---bluebg:light-dark(#eaf0ff,#1c2540);--rule:light-dark(#d6e2f8,#273350);--mark:light-dark(#ffe44f,#6a5800);
+--bg:light-dark(#f7fbfe,#10161b);--ink:light-dark(#15222c,#e6f0f6);--mut:light-dark(#566572,#9fb1bf);
+--line:light-dark(#dbe9f3,#26333d);--soft:light-dark(#edf5fb,#18222a);--card:light-dark(#ffffff,#1a252e);
+--band:light-dark(#bfe4f8,#1b3a50);--bandink:light-dark(#11384f,#dcf0fc);--sky:light-dark(#6fbbe8,#5aaedf);
+--sheet:light-dark(#9fd5f3,#2d6286);--sheetink:light-dark(#0f3a55,#eaf7ff);
+--ans:light-dark(#c4486a,#f59ab3);--mean:light-dark(#11777f,#6fd6d6);--blue:light-dark(#2873a8,#8fcdf5);
+--bluebg:light-dark(#e2f2fc,#18303f);--rule:light-dark(#d4eaf8,#23394a);--mark:light-dark(#ffe44f,#6a5800);
 --ok:light-dark(#0f7d47,#58d494);--okbg:light-dark(#e2f5ea,#12301f);--nobg:light-dark(#fde5e5,#3b1618)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
@@ -29,16 +31,16 @@ button,select,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .wrap{max-width:1180px;margin:0 auto;padding:0 max(16px,4vw)}
-.top{background:var(--red);color:#fff}
+.top{background:var(--band);color:var(--bandink)}
 .hb{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;padding-block:14px}
 .brand{display:flex;align-items:center;gap:12px}
-.seal{width:44px;height:44px;border-radius:50%;background:#fff;color:var(--red);display:grid;place-items:center;font:800 26px/1 "Shippori Mincho B1",serif;flex:none}
+.seal{width:44px;height:44px;border-radius:50%;background:light-dark(#fff,#0f2738);color:var(--blue);display:grid;place-items:center;font:800 26px/1 "Shippori Mincho B1",serif;flex:none}
 .brand h1{font-size:22px;line-height:1.1;margin:0;letter-spacing:-.02em}
 .brand small{display:block;font-size:13px;opacity:.9}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
-.chip{background:rgb(255 255 255/.16);border:1px solid rgb(255 255 255/.35);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:8px}
-.chip i{display:block;width:44px;height:5px;border-radius:3px;background:rgb(255 255 255/.3);overflow:hidden}
-.chip i b{display:block;height:100%;background:#fff}
+.chip{background:light-dark(rgb(255 255 255/.55),rgb(255 255 255/.08));border:1px solid light-dark(rgb(255 255 255/.95),rgb(255 255 255/.22));border-radius:999px;padding:5px 12px;font-size:13px;font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.chip i{display:block;width:44px;height:5px;border-radius:3px;background:color-mix(in srgb,var(--bandink) 15%,transparent);overflow:hidden}
+.chip i b{display:block;height:100%;background:var(--blue)}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:28px;align-items:start;padding-block:22px 8px}
 @media(max-width:920px){.grid{grid-template-columns:minmax(0,1fr)}}
 .modes{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
@@ -74,13 +76,13 @@ select{border:1px solid var(--line);background:var(--card);border-radius:10px;pa
 .word{font:800 clamp(40px,7.5vw,64px)/1.15 "Shippori Mincho B1","Yu Mincho",serif;letter-spacing:.02em;text-align:center;padding:26px 0 22px;overflow-wrap:anywhere}
 .ans{position:relative;overflow:hidden;border-radius:10px;padding:6px 14px 10px;background:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule) 31px 32px);min-height:190px}
 .furi{font-size:22px;line-height:32px;color:var(--blue);text-align:center;font-weight:700}
-.kr{font-size:22px;line-height:32px;color:var(--ans);font-weight:700;text-align:center;padding-top:6px}
+.kr{font-size:22px;line-height:32px;color:var(--mean);font-weight:700;text-align:center;padding-top:6px}
 .ex{margin-top:10px;font-size:16px;line-height:32px}
 .ex p{margin:0}
 .exk{color:var(--mut)}
 mark{background:linear-gradient(transparent 45%,var(--mark) 45%);color:inherit;padding:0 1px}
-.sheet{position:absolute;inset:0;border:0;border-radius:10px;background:linear-gradient(165deg,color-mix(in srgb,var(--red) 80%,#fff 20%),var(--red) 55%);color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:16px;transition:transform .45s cubic-bezier(.2,.8,.2,1);box-shadow:inset 0 1px 0 rgb(255 255 255/.4)}
-.sheet kbd{font:500 13px/1 inherit;border:1px solid rgb(255 255 255/.6);border-radius:6px;padding:4px 6px}
+.sheet{position:absolute;inset:0;border:0;border-radius:10px;background:linear-gradient(165deg,color-mix(in srgb,var(--sheet) 70%,#fff 30%),var(--sheet) 55%);color:var(--sheetink);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:16px;transition:transform .45s cubic-bezier(.2,.8,.2,1);box-shadow:inset 0 1px 0 rgb(255 255 255/.4)}
+.sheet kbd{font:500 13px/1 inherit;border:1px solid color-mix(in srgb,currentColor 45%,transparent);border-radius:6px;padding:4px 6px}
 .sheet.gone{transform:translateY(102%);pointer-events:none}
 .grades{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:22px}
 .grades button,.opt,.btn{border:1px solid var(--line);background:var(--card);border-radius:12px;min-height:56px;padding:8px 10px;font-weight:700;font-size:15px;line-height:1.25}
@@ -125,7 +127,7 @@ mark{background:linear-gradient(transparent 45%,var(--mark) 45%);color:inherit;p
 @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 /* ox */
 .bar{height:10px;border-radius:5px;background:var(--soft);overflow:hidden}
-.bar i{display:block;height:100%;background:var(--red);transition:width .1s linear}
+.bar i{display:block;height:100%;background:var(--sky);transition:width .1s linear}
 .oxb{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .oxb button{min-height:88px;border-radius:16px;border:2px solid;font-size:22px;font-weight:700;background:var(--card)}
 .oxb .o{border-color:var(--ok);color:var(--ok)}
@@ -220,7 +222,7 @@ summary{cursor:pointer;font-weight:500;font-size:15px;min-height:32px}
   <aside>
     <section class="panel">
       <div class="ringrow">
-        <div class="ringbox"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" stroke="var(--soft)"/><circle id="ring" cx="60" cy="60" r="50" stroke="var(--red)" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg><div class="rnum"><b id="tNum">0</b><span id="tGoal">/ 30 오늘</span></div></div>
+        <div class="ringbox"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" stroke="var(--soft)"/><circle id="ring" cx="60" cy="60" r="50" stroke="var(--sky)" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg><div class="rnum"><b id="tNum">0</b><span id="tGoal">/ 30 오늘</span></div></div>
         <dl class="kv"><div><dt>복습 대기</dt><dd id="kDue">0</dd></div><div><dt>남은 새 단어</dt><dd id="kNew">0</dd></div><div><dt>마스터</dt><dd id="kMas">0</dd></div><div><dt>학습한 단어</dt><dd id="kSeen">0</dd></div></dl>
       </div>
       <div class="week" id="week"></div>

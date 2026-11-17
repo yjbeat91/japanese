@@ -56,7 +56,7 @@ cd app && python3 -m http.server 8000   # file://로 열면 fetch가 막혀서 �
   발음: claude.ai에서는 `claude.use('tts')`(일본어), 없으면 브라우저 speechSynthesis.
   `window.claude`는 claude.ai 아티팩트 안에서만 있으므로, GitHub Pages에서는 저장은 브라우저에만 되고 발음은 브라우저 음성으로 나온다.
   (이 코드는 아티팩트 버전 호환용으로 남겨 둔다. 없으면 조용히 건너뛴다.)
-- 디자인: 단어 카드 + 赤シート(빨간 시트) 콘셉트. 일본어는 `lang="ja"`로 감싸 일본 한자 글꼴(Zen Kaku Gothic New / Shippori Mincho B1)로 보인다.
+- 디자인: 단어 카드 + 정답 가림 시트 콘셉트. 색은 **파스텔 하늘색**(사용자 요청, 빨간색은 쓰지 않음): 헤더 `--band`, 가림 시트 `--sheet`, 선택·버튼 `--blue`, 뜻 `--mean`(청록), 오답만 `--ans`(연한 장미색). 일본어는 `lang="ja"`로 감싸 일본 한자 글꼴(Zen Kaku Gothic New / Shippori Mincho B1)로 보인다.
 
 ## 남은 일 / 아이디어
 
