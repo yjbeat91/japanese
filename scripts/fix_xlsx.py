@@ -5,6 +5,7 @@ import os
 HERE=os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0,HERE)
 from fixes import F
+from fixes_ex import EX
 exec(open(os.path.join(HERE,'fixes2.py'),encoding='utf-8').read())
 src_path, out_path = sys.argv[1], sys.argv[2]
 wb = openpyxl.load_workbook(src_path)
@@ -47,12 +48,16 @@ for ws in wb.worksheets:
         if new_f == '' : new_f = None if not old_f or old_f == target_jp else ''
         setc(c, '후리가나', old_f, new_f)
         setc(d, '뜻', kr, new_kr)
+        ek_ = next((k for k in (src + '|' + jp, src) if k in EX), None)
+        if ek_:
+            e = ws.cell(r, 5); old_e = str(e.value or '').strip()
+            setc(e, '예문', old_e, '%s (%s)' % EX[ek_])
 # change list sheet
 ls = wb.create_sheet('수정 목록', 0)
 f_hdr = Font(name='Calibri', size=11, bold=True)
 f_body = Font(name='Calibri', size=11)
 thin = Side(style='thin', color='BFBFBF')
-ls['A1'] = '후리가나·단어 수정 목록'; ls['A1'].font = Font(name='Calibri', size=14, bold=True)
+ls['A1'] = '후리가나·단어·예문 수정 목록'; ls['A1'].font = Font(name='Calibri', size=14, bold=True)
 ls['A2'] = ('노란 칸 = 고친 칸 (메모에 원래 값), 빨간 칸 = 확인이 필요한 행. '
             '새로 받은 "차,카" 시트(ㅊ·ㅋ 단어 252개)도 검토해 함께 고쳤습니다.')
 ls['A2'].font = f_body; ls['A2'].alignment = Alignment(wrap_text=True, vertical='top')

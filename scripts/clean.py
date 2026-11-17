@@ -3,6 +3,7 @@ import os
 HERE=os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0,HERE)
 from fixes import F
+from fixes_ex import EX
 exec(open(os.path.join(HERE,'fixes2.py'),encoding='utf-8').read())
 from collections import Counter as _C
 hits=_C()
@@ -103,7 +104,9 @@ for ws in sheets:
             furi,flag=fx[0],0
         else:
             furi,flag=clean_furi(jp,f)
-        exJ,exK=split_ex(str(r[4] or ''))
+        ek_=next((k for k in (k1,src) if k in EX),None)
+        if ek_: exJ,exK=EX[ek_]; used.add(ek_); hits['예문:'+ek_]+=1
+        else: exJ,exK=split_ex(str(r[4] or ''))
         bs,bl=find_blank(jp,exJ)
         furi=furi.replace(' ','').replace('\u3000','')
         if furi==jp: furi=''
@@ -113,7 +116,7 @@ gc=Counter(w[7] for w in out)
 for w in out:
     if gc[w[7]]<20: w[7]='기타'
 print(len(out),dict(stats))
-print('unused fixes',(set(F)|set(F2))-used)
+print('unused fixes',(set(F)|set(F2)|set(EX))-used)
 print('multi-hit',[k for k,v in hits.items() if v>1])
 print('applied',len(hits))
 print(Counter(w[7] for w in out))
