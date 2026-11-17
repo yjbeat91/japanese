@@ -21,6 +21,7 @@ claude.ai에서 혼자 동작하는 페이지로 다시 만들었다.
   값은 `(후리가나, 새 단어 또는 None, 새 뜻 또는 None)`. 후리가나 `''`는 가나 단어라 비운다는 뜻.
 - `scripts/fixes_ex.py` — 예문 수정표 `EX`. 원본 예문이 "한국어 (일본어)" 순서이거나 일본어에 한글이 섞인 줄을 `(일본어 예문, 한국어 해석)`으로 바로잡는다. 키 규칙은 위와 같다.
 - `scripts/fix_xlsx.py` — 원본 엑셀 → 수정본 엑셀.
+- `scripts/ex_xlsx.py` — 예문 수정만 모은 `out/일본어 예문_수정본.xlsx`(원래 예문 / 고친 일본어 예문 / 고친 한국어 해석 / 이유). `EX2`는 해석에 일본어가 섞였던 두 번째 묶음.
 - `.github/workflows/pages.yml` — `app/` 폴더를 GitHub Pages로 배포.
 
 ## 다시 만들기
@@ -28,6 +29,7 @@ claude.ai에서 혼자 동작하는 페이지로 다시 만들었다.
 ```bash
 python3 scripts/clean.py "data/일본어 단어장_원본.xlsx" app/vocab.json
 python3 scripts/fix_xlsx.py "data/일본어 단어장_원본.xlsx" "out/일본어 단어장_수정본.xlsx"
+python3 scripts/ex_xlsx.py "data/일본어 단어장_원본.xlsx" "out/일본어 예문_수정본.xlsx"
 cd app && python3 -m http.server 8000   # file://로 열면 fetch가 막혀서 단어를 못 불러온다
 ```
 
