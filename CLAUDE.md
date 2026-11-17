@@ -1,7 +1,12 @@
 # 일본어 단어왕 (JLPT N2 단어 학습 앱)
 
 엑셀 단어장(5,476개)을 정리해서 만든 학습 웹앱이다. 원래 Gemini로 만든 Google Apps Script 버전에서 시작했고,
-claude.ai에서 혼자 동작하는 페이지로 다시 만들었다. 공개된 앱: https://claude.ai/artifact/Bv7wgaGt77xyHb9YFe9q9a
+claude.ai에서 혼자 동작하는 페이지로 다시 만들었다.
+
+- **기본 주소(GitHub Pages)**: https://yjbeat91.github.io/japanese/ — `main`의 `app/`이 바뀌면 `.github/workflows/pages.yml`이 자동 배포한다.
+- 예전 주소(claude.ai 아티팩트): https://claude.ai/artifact/Bv7wgaGt77xyHb9YFe9q9a — 자동으로 갱신되지 않는다.
+- **서버·DB는 두지 않는다**(사용자 결정). 앱스크립트·구글 시트·수파베이스 연동은 하지 않는다.
+  진도는 브라우저 localStorage에만 저장된다. 단어 추가·수정은 사용자가 요청하면 Claude가 저장소에서 고쳐 푸시한다.
 
 ## 폴더 구성
 
@@ -15,6 +20,7 @@ claude.ai에서 혼자 동작하는 페이지로 다시 만들었다. 공개된 
 - `scripts/fixes.py`, `scripts/fixes2.py` — 손으로 검토한 수정표. 키는 `"시트 #번호"` 또는 같은 번호가 겹칠 때 `"시트 #번호|원래단어"`,
   값은 `(후리가나, 새 단어 또는 None, 새 뜻 또는 None)`. 후리가나 `''`는 가나 단어라 비운다는 뜻.
 - `scripts/fix_xlsx.py` — 원본 엑셀 → 수정본 엑셀.
+- `.github/workflows/pages.yml` — `app/` 폴더를 GitHub Pages로 배포.
 
 ## 다시 만들기
 
@@ -35,6 +41,12 @@ cd app && python3 -m http.server 8000   # file://로 열면 fetch가 막혀서 �
 - 세트(30개씩)는 `seeded(W.length, 20261117)`로 섞는다. 단어 수가 바뀌면 세트 구성이 다시 섞인다(단어별 기록은 유지).
 - 원본 엑셀은 고치지 않는다. 수정은 수정표에 넣고 스크립트로 다시 만든다.
 
+## 단어 추가하기
+
+새 단어는 `vocab.json` **맨 뒤에만** 붙인다(ID 규칙). 원본 엑셀에 없는 단어라면 `clean.py`를 다시 돌렸을 때 사라지지 않도록
+`clean.py`가 맨 끝에 덧붙이는 방식(별도 추가 목록)으로 넣고, 다시 만든 결과에서 기존 줄이 그대로인지 확인한다.
+예문의 빈칸 위치(빈칸시작·길이)와 뜻초성그룹도 `clean.py`와 같은 규칙으로 채운다. 푸시 후 `main`에 합쳐지면 앱에 반영된다.
+
 ## 앱 구조 (index.html)
 
 - 모드: 단어 카드(빨간 시트를 내려 읽기→뜻 확인, 다시/애매/알아요/쉬움 평가), 4지선다(뜻·단어·읽기), 빈칸 채우기, 짝 맞추기, 60초 스피드 OX.
@@ -42,13 +54,14 @@ cd app && python3 -m http.server 8000   # file://로 열면 fetch가 막혀서 �
 - 기록 `S.r[id] = [상자, 다음복습일, 틀린횟수, 오답노트여부, 연속정답, 처음본날]`, 복습 간격 `INT=[0,1,2,4,8,16,32,64]`일.
 - 저장: localStorage에 먼저, claude.ai에서는 `claude.use('db')`로 계정(`data/users/<id>/progress`)에도 저장.
   발음: claude.ai에서는 `claude.use('tts')`(일본어), 없으면 브라우저 speechSynthesis.
-  `window.claude`는 claude.ai 아티팩트 안에서만 있으므로, 다른 곳에 올리면 저장은 브라우저에만 되고 발음은 브라우저 음성으로 나온다.
+  `window.claude`는 claude.ai 아티팩트 안에서만 있으므로, GitHub Pages에서는 저장은 브라우저에만 되고 발음은 브라우저 음성으로 나온다.
+  (이 코드는 아티팩트 버전 호환용으로 남겨 둔다. 없으면 조용히 건너뛴다.)
 - 디자인: 단어 카드 + 赤シート(빨간 시트) 콘셉트. 일본어는 `lang="ja"`로 감싸 일본 한자 글꼴(Zen Kaku Gothic New / Shippori Mincho B1)로 보인다.
 
 ## 남은 일 / 아이디어
 
 - 수정본 엑셀의 빨간 칸: 색인 행 7개 삭제, 뜻이 빈 1행 채우기(사용자가 직접).
 - 후리가나는 전체를 한 번 사람이 검토했지만 놓친 것이 있을 수 있다. 사용자가 이상한 읽기를 알려 주면 `fixes2.py`에 추가하고 다시 만든다.
-- 원래 버전처럼 구글 시트와 연동하려면 Apps Script용(Index.html + Code.gs)으로 옮겨야 한다.
-  처음 받은 Gemini 코드의 문제: `google.script.run`은 Apps Script 안에서만 동작, Code.gs 없음, 예문에 `（ ）`가 없어 빈칸 퀴즈가 동작하지 않음,
+- 진도가 기기마다 따로라서, 필요하면 진도 내보내기/가져오기(JSON 파일) 기능을 붙일 수 있다(서버 없이).
+- 처음 받은 Gemini 코드(Apps Script)의 문제: `google.script.run`은 Apps Script 안에서만 동작, Code.gs 없음, 예문에 `（ ）`가 없어 빈칸 퀴즈가 동작하지 않음,
   오답 선택지가 정답과 같은 뜻일 수 있음, 일본어가 한국어 글꼴로 표시됨.
